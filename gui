@@ -1,0 +1,56 @@
+from tkinter import *
+from tkinter import messagebox, ttk
+
+
+def calculate_pay():
+    try:
+        hours_worked = float(entry_hours_worked.get())
+    except ValueError:
+        messagebox.showerror("Error", "Invalid input for Hours Worked")
+        return
+
+    position = combo_position.get()
+    rate_per_hour = 0
+
+    if position == "Clerk":
+        rate_per_hour = 250
+    elif position == "Supervisor":
+        rate_per_hour = 450
+    elif position == "Manager":
+        rate_per_hour = 650
+    else:
+        messagebox.showerror("Error", "Invalid position")
+        return
+
+    pay = rate_per_hour * hours_worked
+    tax = pay * 0.12
+    total_pay = pay - tax
+
+    result_message = f"Position: {position}\nHours Worked: {hours_worked} hours\nRate per Hour: ${rate_per_hour}\nPay: ${pay:.2f}\nTax (12%): ${tax:.2f}\nTotal Pay: ${total_pay:.2f}"
+
+    messagebox.showinfo("Pay Calculation", result_message)
+    entry_hours_worked.delete(0, END)  # Clear the input field
+
+
+ws = Tk()
+ws.title('Employee Pay Calculator')
+ws.geometry('400x300')
+ws.config(bg='#0B5A81')
+
+frame = Frame(ws, bd=2, bg='#CCCCCC', relief=SOLID, padx=10, pady=10)
+frame.pack(padx=50, pady=50)
+
+Label(frame, text="Hours Worked", bg='#CCCCCC', font=('Times', 14)).grid(row=0, column=0, sticky=W, pady=10)
+Label(frame, text="Position", bg='#CCCCCC', font=('Times', 14)).grid(row=1, column=0, pady=10)
+
+entry_hours_worked = Entry(frame, font=('Times', 14))
+combo_position = ttk.Combobox(frame, values=["Clerk", "Supervisor", "Manager"], font=('Times', 14))
+bCalculate = Button(frame, width=15, text='Calculate Pay', font=('Times', 14), relief=SOLID, cursor='hand2',
+                    command=calculate_pay)
+
+entry_hours_worked.grid(row=0, column=1, pady=10, padx=20)
+combo_position.grid(row=1, column=1, pady=10, padx=20)
+bCalculate.grid(row=2, column=1, pady=10, padx=20)
+
+frame.place(x=50, y=50)
+ws.mainloop()
