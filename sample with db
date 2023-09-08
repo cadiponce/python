@@ -1,0 +1,99 @@
+import mysql.connector
+
+mydb = mysql.connector.connect(
+    host="localhost",
+    user="root",
+    password="",
+    database="dbInventory"
+)
+
+mycursor = mydb.cursor()
+
+
+def initialize_database():
+    mycursor.execute('''
+        CREATE TABLE IF NOT EXISTS tblproducts (
+            ProductID VARCHAR(15) PRIMARY KEY,
+            ProductName VARCHAR(60),
+            Price FLOAT
+        )
+    ''')
+    mydb.commit()
+
+
+def add_product(product_id, product_name, price):
+    sql = "INSERT INTO tblproducts (ProductID, ProductName, Price) VALUES (%s, %s, %s)"
+    val = (product_id, product_name, price)
+    mycursor.execute(sql, val)
+    mydb.commit()
+    print("Product added successfully!")
+
+
+def update_product(product_id, product_name, price):
+    sql = "UPDATE tblproducts SET ProductName = %s, Price = %s WHERE ProductID = %s"
+    val = (product_name, price, product_id)
+    mycursor.execute(sql, val)
+    mydb.commit()
+    print("Product updated successfully!")
+
+
+def delete_product(product_id):
+    sql = "DELETE FROM tblproducts WHERE ProductID = %s"
+    val = (product_id,)
+    mycursor.execute(sql, val)
+    mydb.commit()
+    print("Product deleted successfully!")
+
+
+# Function to search for a product in the inventory
+def search_product(product_id):
+    sql = "SELECT * FROM tblproducts WHERE ProductID = %s"
+    val = (product_id,)
+    mycursor.execute(sql, val)
+    result = mycursor.fetchone()
+    return result
+
+
+def main():
+    initialize_database()
+
+    while True:
+        print("Stock Inventory Management")
+        print("1. Add Product")
+        print("2. Update Product")
+        print("3. Delete Product")
+        print("4. Search Product")
+        print("5. Exit")
+
+        choice = input("Enter your choice: ")
+
+        if choice == '1':
+            product_id = input("Enter Product ID: ")
+            product_name = input("Enter Product Name: ")
+            price = float(input("Enter Price: "))
+            add_product(product_id, product_name, price)
+        elif choice == '2':
+            product_id = input("Enter Product ID to update: ")
+            product_name = input("Enter new Product Name: ")
+            price = float(input("Enter new Price: "))
+            update_product(product_id, product_name, price)
+        elif choice == '3':
+            product_id = input("Enter Product ID to delete: ")
+            delete_product(product_id)
+        elif choice == '4':
+            product_id = input("Enter Product ID to search: ")
+            result = search_product(product_id)
+            if result:
+                print(f"Product ID: {result[0]}")
+                print(f"Product Name: {result[1]}")
+                print(f"Price: {result[2]}")
+            else:
+                print("Product not found.")
+        elif choice == '5':
+            break
+        else:
+            print("Invalid choice. Please try again.")
+
+
+if __name__ == "__main__":
+    main()
